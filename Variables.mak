@@ -1,0 +1,26 @@
+ifeq ($(PROFILE), 1)
+    PROF=-pg
+else
+    PROF=
+endif
+CXX=g++ -O3 -std=c++14 -g -Wall $(PROF)
+CC=gcc -O3 -g $(PROF)
+LINKLIB=g++ -shared $(PROF)
+LINK=g++ $(PROF)
+
+ifeq ($(LIBOPENSSL_PATH),)
+LIBOPENSSL_CFLAGS=
+LIBOPENSSL_LIBS= -lssl -lcrypto
+LIBOPENSSL_PKG_CONFIG_PATH=
+else
+LIBOPENSSL_CFLAGS=-I$(LIBOPENSSL_PATH)/include
+LIBOPENSSL_LIBPATH := $(shell test -d $(LIBOPENSSL_PATH)/lib64 && echo $(LIBOPENSSL_PATH)/lib64)
+  ifeq ($(LIBOPENSSL_LIBPATH),)
+    LIBOPENSSL_LIBPATH=$(LIBOPENSSL_PATH)/lib
+  endif
+LIBOPENSSL_LIBS=-L$(LIBOPENSSL_LIBPATH) -lssl -lcrypto -Wl,-rpath -Wl,$(LIBOPENSSL_LIBPATH)
+LIBOPENSSL_PKG_CONFIG_PATH=$(LIBOPENSSL_PATH)/lib64/pkgconfig
+endif
+
+VERSION=1.0
+
